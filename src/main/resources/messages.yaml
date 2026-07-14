@@ -1,0 +1,43 @@
+app:
+  title: "Spring AI Chat"
+
+button:
+  cancel: "Cancel"
+  ok: "OK"
+  copy: "Copy"
+  send: "Send"
+  save: "Save"
+
+chat:
+  no_chat_selected: "No chat selected"
+  select_chat_placeholder: "Select a chat to start"
+  empty_chat_list: "No chats"
+  button:
+    new: "New chat"
+    edit: "Edit"
+    delete: "Delete"
+    archive: "Archive"
+  placeholder:
+    new: "My chat"
+    input: "Ask anything ..."
+  modal:
+    new:
+      new: "Create new chat"
+      edit: "Edit chat"
+      label: "Chat title"
+  message:
+    edit: "Edit"
+    save: "Save"
+    cancel: "Cancel"
+
+user:
+  default_name: "User"
+  auth:
+    logout: "Logout"
+  context:
+    language: "Language"
+
+language:
+  modal:
+    name: "Language"
+    select_name: "Select language"
