@@ -1,0 +1,43 @@
+app:
+  title: "Spring AI Чат"
+
+button:
+  cancel: "Отменить"
+  ok: "OK"
+  copy: "Копировать"
+  send: "Отправить"
+  save: "Сохранить"
+
+chat:
+  no_chat_selected: "Нет выбранных чатов"
+  select_chat_placeholder: "Выберите чат"
+  empty_chat_list: "Нет чатов"
+  button:
+    new: "Новый чат"
+    edit: "Редактировать"
+    delete: "Удалить"
+    archive: "Отправить в архив"
+  placeholder:
+    new: "Мой новый чат"
+    input: "Спроси о чем-нибудь ..."
+  modal:
+    new:
+      new: "Добавить новый чат"
+      edit: "Редактировать чат"
+      label: "Название"
+  message:
+    edit: "Редактировать"
+    save: "Сохранить"
+    cancel: "Отменить"
+
+user:
+  default_name: "Пользователь"
+  auth:
+    logout: "Выйти"
+  context:
+    language: "Язык"
+
+language:
+  modal:
+    name: "Язык"
+    select_name: "Выберите язык"

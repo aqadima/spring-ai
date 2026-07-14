@@ -1,0 +1,41 @@
+server:
+  port: ${APP_PORT}
+
+spring:
+  application:
+    name: spring-ai
+  main:
+    allow-circular-references: true
+#  messages:
+#    basename: messages
+#    cache-duration: 3600
+
+  ai:
+    ollama:
+      base-url: ${OLLAMA_URL}
+      chat:
+        model: ${OLLAMA_CHAT_MODEL}
+
+  datasource:
+    url: ${PG_URL}
+    username: ${PG_USER}
+    password: ${PG_PASSWORD}
+
+  jpa:
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate.jdbc.timezone: UTC
+      hibernate.hibernate.format_sql: true
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    schemas: flyway
+    locations: classpath:db/migration/scripts
+
+app:
+  user:
+    id:
+      default: ${DEFAULT_USER_ID}
