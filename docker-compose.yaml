@@ -3,7 +3,7 @@ services:
   postgres:
     container_name: spring-ai-pg
     image: ankane/pgvector:v0.5.0
-    restart: always
+    restart: unless-stopped
     environment:
       CREATE_DATABASES: ragdb
       POSTGRES_USER: ${PG_USER}
@@ -48,6 +48,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    restart: unless-stopped
     networks:
       - spring_ai-network
 
