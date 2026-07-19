@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <!--  Fragment of Chat Header  -->
+    <th:block th:fragment="chatHeader(chatId, chatTitle)">
+        <header class="chat-header">
+            <h2 class="chat-title-main" th:text="${chat.title}">New Chat</h2>
+            <div class="context-wrapper">
+                <button class="context-trigger" data-target="headerChatMenu">⋯</button>
+                <th:block th:replace="~{fragment/context_menu_fragment::chatContextMenu('headerChatMenu', ${chatId}, ${chatTitle}, 'header-menu')}">
+                </th:block>
+            </div>
+        </header>
+    </th:block>
+
+    <!--  Fragment of Chat Message  -->
+    <th:block th:fragment="chatMessage(messageContent, messageRoleName)">
+        <div class="message" th:classappend="'message-' + ${messageRoleName}">
+            <div class="message-body">
+                <div class="message-content">
+                    <!-- Raw markdown (hidden) -->
+                    <script type="text/markdown" class="raw-markdown" th:utext="${messageContent}"></script>
+                    <div class="rendered-markdown"></div>
+                </div>
+                <div class="message-actions">
+                    <button class="btn-icon copy-btn" th:title="#{button.copy}" aria-label="Copy">📋</button>
+                    <button th:if="${#strings.equals('user', messageRoleName)}"
+                            class="btn-icon edit-btn"
+                            th:title="#{chat.message.edit}"
+                            aria-label="Edit">✏️
+                    </button>
+                </div>
+            </div>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="chatMessages(chat)">
+        <div class="chat-messages" id="chatMessages">
+            <th:block th:each="message : ${chat.messages}">
+                <th:block th:replace="~{::chatMessage(
+                    messageContent=${message.content},
+                    messageRoleName=${message.role.name().toLowerCase()})}
+                ">
+                </th:block>
+            </th:block>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="chatInput()">
+        <div class="chat-input-form">
+                <textarea name="prompt"
+                          id="chatInput"
+                          class="chat-input"
+                          rows="1"
+                          th:placeholder="#{chat.placeholder.input}"
+                          placeholder="Ask anything ..."></textarea>
+            <button type="button" id="sendBtn" class="btn-send" th:text="#{button.send}">Send</button>
+        </div>
+    </th:block>
+
+    <!--  Fragment of No Chat Selected  -->
+    <th:block th:fragment="noChatSelected()">
+        <div class="no-chat-selected">
+            <div class="placeholder-icon">💬</div>
+            <h2 th:text="#{chat.no_chat_selected}">No chat selected</h2>
+            <p th:text="#{chat.select_chat_placeholder}">Select a chat</p>
+        </div>
+    </th:block>
+
+</body>
+</html>

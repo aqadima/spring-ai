@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <!--  Fragment of Chat Menu  -->
+    <th:block th:fragment="chatContextMenu(menuId, chatId, chatTitle, extraclass)">
+        <div th:id="${menuId}"
+             class="context-menu context-menu-bottom-right"
+             th:classappend="${extraclass}"
+        >
+            <ul>
+                <li>
+                    <button class="menu-item edit-chat-btn"
+                            th:data-chat-id="${chatId}"
+                            th:data-chat-title="${chatTitle}"
+                            th:text="#{chat.button.edit}">Edit
+                    </button>
+                </li>
+                <li>
+                    <form th:action="@{/chat/{id}/archive(id=${chatId})}" method="post" class="menu-form">
+                        <button type="submit" class="menu-item" th:text="#{chat.button.archive}">Archive</button>
+                    </form>
+                </li>
+                <li>
+                    <form th:action="@{/chat/{id}/delete(id=${chatId})}" method="post" class="menu-form">
+                        <input type="hidden" name="_method" value="post"/>
+                        <button type="submit" class="menu-item menu-item-danger" th:text="#{chat.button.delete}">
+                            Delete
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </th:block>
+
+    <!--  Fragment of Archive Chat Menu  -->
+    <div th:fragment="archive-modal" id="archiveModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2>Archived Chats</h2>
+            <div id="archiveLoading">Loading…</div>
+            <ul id="archiveChatList"></ul>
+            <div id="archivePreview">
+                <div class="archive-preview-placeholder">Select a chat to preview</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

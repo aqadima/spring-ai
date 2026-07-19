@@ -15,8 +15,12 @@ public interface ChatRepository extends JpaRepository<ChatEntity, UUID> {
     Optional<ChatEntity> findById(@Nonnull final UUID chatId);
 
     @Nonnull
-    @Query("SELECT c FROM ChatEntity c WHERE c.userId = :userId ORDER BY c.updatedAt DESC")
-    List<ChatEntity> findAllByUserId(UUID userId);
+    @Query("SELECT c FROM ChatEntity c WHERE c.userId = :userId AND c.isActive = true ORDER BY c.updatedAt DESC")
+    List<ChatEntity> findAllActiveChatsByUserId(UUID userId);
+
+    @Nonnull
+    @Query("SELECT c FROM ChatEntity c WHERE c.userId = :userId AND c.isActive = false ORDER BY c.updatedAt DESC")
+    List<ChatEntity> findAllArchivedChatsByUserId(UUID userId);
 
     void deleteById(@Nonnull final UUID chatId);
 

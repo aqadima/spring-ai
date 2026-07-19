@@ -18,8 +18,9 @@ public class ChatDomainServiceImpl implements ChatDomainService {
 
     private final ChatRepository chatRepository;
 
+    @Nonnull
     @Override
-    public ChatEntity save(ChatEntity chat) {
+    public ChatEntity save(@Nonnull final ChatEntity chat) {
         return chatRepository.save(chat);
     }
 
@@ -32,12 +33,18 @@ public class ChatDomainServiceImpl implements ChatDomainService {
 
     @Nonnull
     @Override
-    public List<ChatEntity> getAllUserChats(@Nonnull final UUID userId) {
-        return chatRepository.findAllByUserId(userId);
+    public List<ChatEntity> getAllUserActiveChats(@Nonnull final UUID userId) {
+        return chatRepository.findAllActiveChatsByUserId(userId);
+    }
+
+    @Nonnull
+    @Override
+    public List<ChatEntity> getAllUserArchivedChats(@Nonnull final UUID userId) {
+        return chatRepository.findAllArchivedChatsByUserId(userId);
     }
 
     @Override
-    public void deleteChat(UUID chatId) {
+    public void deleteChat(@Nonnull final UUID chatId) {
         chatRepository.findById(chatId)
                 .ifPresentOrElse(
                         _ -> chatRepository.deleteById(chatId),

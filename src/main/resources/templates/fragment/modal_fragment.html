@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <!--  New chat modal fragment  -->
+    <th:block th:fragment="newChatModal()">
+        <div id="newChatModal" class="modal">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h3 th:text="#{chat.modal.new.new}">Create new chat</h3>
+                    <button class="modal-close" data-modal="newChatModal">✕</button>
+                </div>
+                <form th:action="@{/chat/new}" method="post" class="modal-form">
+                    <label for="newChatTitle" th:text="#{chat.modal.new.label}">Chat title</label>
+                    <input type="text" id="newChatTitle" name="title"
+                           th:placeholder="#{chat.placeholder.new}"
+                           placeholder="My chat" required>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel modal-close-btn" th:text="#{button.cancel}">Cancel</button>
+                        <button type="submit" class="btn-primary" th:text="#{button.save}">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </th:block>
+
+    <!--  Edit chat modal fragment  -->
+    <th:block th:fragment="editChatModal()">
+        <div id="editChatModal" class="modal">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h3 th:text="#{chat.modal.new.edit}">Edit chat</h3>
+                    <button class="modal-close" data-modal="editChatModal">✕</button>
+                </div>
+                <form id="editChatForm" class="modal-form">
+                    <label for="editChatTitle" th:text="#{chat.modal.new.label}">Chat title</label>
+                    <input type="text" id="editChatTitle" name="title"
+                           th:placeholder="#{chat.placeholder.new}" required>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel modal-close-btn" th:text="#{button.cancel}">Cancel</button>
+                        <button type="submit" class="btn-primary" th:text="#{button.save}">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="changeLanguageModal()">
+        <div id="languageModal" class="modal">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-header">
+                    <h3 th:text="#{language.modal.select_name}">Select language</h3>
+                    <button class="modal-close" data-modal="languageModal">✕</button>
+                </div>
+                <div class="modal-body">
+                    <ul class="language-list">
+                        <li><a href="?lang=en" class="language-link">🇬🇧 English</a></li>
+                        <li><a href="?lang=fr" class="language-link">🇫🇷 Français</a></li>
+                        <li><a href="?lang=de" class="language-link">🇩🇪 Deutsch</a></li>
+                        <li><a href="?lang=ru" class="language-link">🇷🇺 Русский</a></li>
+                        <li><a href="?lang=es" class="language-link">🇪🇸 Español</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="archiveModal()">
+        <div id="archiveModal" class="modal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-header">
+                    <h3 th:text="#{chat.modal.archive.title}">Archived chats</h3>
+                    <button class="modal-close" data-modal="archiveModal">✕</button>
+                </div>
+                <div class="archive-container">
+                    <!-- Left panel: list of archived chats -->
+                    <div class="archive-list-panel">
+                        <div class="archive-list-loading" id="archiveLoading" th:text="#{chat.loading}">Loading...</div>
+                        <ul class="archive-chat-list" id="archiveChatList"></ul>
+                    </div>
+                    <!-- Right panel: preview of selected chat -->
+                    <div class="archive-preview-panel" id="archivePreview">
+                        <div class="archive-preview-placeholder" th:text="#{chat.select_chat_placeholder}">Select a chat</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </th:block>
+
+</body>
+</html>

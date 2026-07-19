@@ -18,6 +18,9 @@ public record ChatResponse(
         @JsonProperty("title")
         String title,
 
+        @JsonProperty("is_active")
+        boolean isActive,
+
         @JsonProperty("messages")
         List<ChatMessageResponse> messages,
 

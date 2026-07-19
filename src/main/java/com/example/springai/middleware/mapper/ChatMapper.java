@@ -2,11 +2,11 @@ package com.example.springai.middleware.mapper;
 
 import com.example.springai.domain.model.ChatEntity;
 import com.example.springai.middleware.model.request.ChatRequest;
+import com.example.springai.middleware.model.response.ChatResponse;
 import com.example.springai.middleware.model.response.ChatShortResponse;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import com.example.springai.middleware.model.response.ChatResponse;
 
 import java.util.List;
 import java.util.UUID;
@@ -54,6 +54,7 @@ public class ChatMapper {
     @Nonnull
     public ChatEntity toEntity(@Nonnull final ChatRequest chatRequest, @Nonnull final UUID userId) {
         return ChatEntity.builder()
+                .isActive(true)
                 .title(chatRequest.title())
                 .userId(userId)
                 .build();
