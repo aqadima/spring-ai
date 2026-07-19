@@ -1,26 +1,24 @@
 package com.example.springai.middleware.service.impl;
 
-import com.example.springai.domain.enums.RoleType;
 import com.example.springai.domain.model.ChatEntity;
-import com.example.springai.domain.model.ChatMessageEntity;
 import com.example.springai.domain.service.ChatDomainService;
-import com.example.springai.domain.service.ChatMessageDomainService;
 import com.example.springai.middleware.mapper.ChatMapper;
-import com.example.springai.middleware.mapper.ChatMessageMapper;
-import com.example.springai.middleware.model.request.ChatMessageRequest;
 import com.example.springai.middleware.model.request.ChatRequest;
-import com.example.springai.middleware.model.response.ChatMessageResponse;
 import com.example.springai.middleware.model.response.ChatResponse;
 import com.example.springai.middleware.model.response.ChatShortResponse;
 import com.example.springai.middleware.service.ChatEdgeService;
 import jakarta.annotation.Nonnull;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
+import lombok.SneakyThrows;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -30,8 +28,6 @@ public class ChatFacade implements ChatEdgeService {
 
     private final ChatDomainService chatDomainService;
     private final ChatMapper chatMapper;
-    private final ChatMessageMapper chatMessageMapper;
-    private final ChatMessageDomainService chatMessageDomainService;
     private final ChatClient chatClient;
 
     @Nonnull
@@ -50,36 +46,70 @@ public class ChatFacade implements ChatEdgeService {
 
     @Nonnull
     @Override
-    public List<ChatShortResponse> getAllUserChats(@Nonnull final UUID userId) {
-        List<ChatEntity> chats = chatDomainService.getAllUserChats(userId);
+    public List<ChatShortResponse> getAllUserActiveChats(@Nonnull final UUID userId) {
+        List<ChatEntity> chats = chatDomainService.getAllUserActiveChats(userId);
+        return chatMapper.toShortResponse(chats);
+    }
+
+    @Nonnull
+    @Override
+    public List<ChatShortResponse> getAllUserArchivedChats(@Nonnull final UUID userId) {
+        List<ChatEntity> chats = chatDomainService.getAllUserArchivedChats(userId);
         return chatMapper.toShortResponse(chats);
     }
 
     @Override
-    public void deleteChat(UUID chatId) {
+    public void updateChatTitle(@Nonnull final UUID chatId, @Nonnull final String title) {
+        ChatEntity chat = chatDomainService.getChatById(chatId);
+        chatDomainService.save(chat.setTitle(title));
+    }
+
+    @Override
+    public void archiveChat(@Nonnull final UUID chatId) {
+        ChatEntity chat = chatDomainService.getChatById(chatId);
+        chatDomainService.save(chat.setIsActive(false));
+    }
+
+    @Override
+    public void unarchiveChat(@Nonnull final UUID chatId) {
+        ChatEntity chat = chatDomainService.getChatById(chatId);
+        chatDomainService.save(chat.setIsActive(true));
+    }
+
+    @Override
+    public void deleteChat(@Nonnull final UUID chatId) {
         chatDomainService.deleteChat(chatId);
     }
 
     @Nonnull
     @Override
-    public String sendChatMessage(@NonNull UUID chatId, @NonNull String prompt) {
+    public SseEmitter processMessageWithStreaming(@Nonnull UUID chatId, @Nonnull String prompt) {
 
-        ChatEntity chat = chatDomainService.getChatById(chatId);
-        long lastMessageNumber = chatMessageDomainService.getLastMessageNumberOfChat(chatId)
-                .orElse(0L);
+        StringBuilder answer = new StringBuilder();
+        SseEmitter sseEmitter = new SseEmitter(0L);
+        chatClient.prompt(prompt)
+                .advisors(advisorSpec ->
+                        advisorSpec.param(ChatMemory.CONVERSATION_ID, chatId)
+                )
+                .stream()
+                .chatResponse()
+                .subscribe(
+                        response -> processToken(response, sseEmitter, answer),
+                        sseEmitter::completeWithError
+                );
 
-        this.addMessage(chat, RoleType.USER, prompt, lastMessageNumber + 1);
-
-        String answer = chatClient.prompt().user(prompt).call().content();
-        this.addMessage(chat, RoleType.ASSISTANT, answer, lastMessageNumber + 2);
-
-        return "redirect:/chat/" + chatId;
+        return sseEmitter;
 
     }
 
-    private void addMessage(ChatEntity chat, RoleType role, String content, Long messageNumber) {
-        chatMessageDomainService.save(
-                chatMessageMapper.toEntity(chat, content, role, messageNumber));
+    @SneakyThrows
+    private static void processToken(@Nonnull final org.springframework.ai.chat.model.ChatResponse response,
+                                     @Nonnull final SseEmitter sseEmitter,
+                                     @Nonnull final StringBuilder answer
+    ) {
+        AssistantMessage token = Objects.requireNonNull(response.getResult()).getOutput();
+        answer.append(token.getText());
+        sseEmitter.send(token);
     }
 
 }

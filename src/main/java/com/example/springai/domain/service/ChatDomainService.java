@@ -1,18 +1,25 @@
 package com.example.springai.domain.service;
 
 import com.example.springai.domain.model.ChatEntity;
+import jakarta.annotation.Nonnull;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ChatDomainService {
 
-    ChatEntity save(ChatEntity chatEntity);
+    @Nonnull
+    ChatEntity save(@Nonnull final ChatEntity chatEntity);
 
-    ChatEntity getChatById(UUID chatId);
+    @Nonnull
+    ChatEntity getChatById(@Nonnull final UUID chatId);
 
-    List<ChatEntity> getAllUserChats(UUID userId);
+    @Nonnull
+    List<ChatEntity> getAllUserActiveChats(@Nonnull final UUID userId);
 
-    void deleteChat(UUID chatId);
+    @Nonnull
+    List<ChatEntity> getAllUserArchivedChats(@Nonnull final UUID userId);
+
+    void deleteChat(@Nonnull final UUID chatId);
 
 }

@@ -5,226 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="#{app.title}">Spring AI Chat</title>
     <link rel="stylesheet" th:href="@{/css/chat.css}">
+    <meta id="chatId" th:content="${chat != null ? chat.id : ''}">
 </head>
 <body>
 
-<!-- Overlay for sidebar / modals -->
-<div id="overlay" class="overlay"></div>
+    <!-- Overlay for sidebar / modals -->
+    <div id="overlay" class="overlay"></div>
 
-<!-- Sidebar (sliding left panel) -->
-<aside id="sidebar">
-    <div class="sidebar-header">
-        <h1 class="sidebar-title" th:text="#{app.title}">Spring AI Chat</h1>
-    </div>
+    <!-- Sidebar (sliding left panel) -->
+    <aside id="sidebar">
 
-    <!-- New Chat Button -->
-    <button class="btn-new-chat" id="newChatBtn" th:text="#{chat.button.new}">New chat</button>
+        <th:block th:replace="~{fragment/sidebar_fragment::header()}">
+        </th:block>
 
-    <!-- Chat List -->
-    <nav class="chat-list-container">
-        <ul class="chat-list" th:if="${chats != null && !chats.isEmpty()}">
-            <li class="chat-item" th:each="chatItem : ${chats}">
-                <a th:href="@{/chat/{id}(id=${chatItem.id})}"
-                   class="chat-link"
-                   th:classappend="${chat != null && chat.id == chatItem.id} ? 'active'">
-                    <span class="chat-title" th:text="${chatItem.title}">Chat title</span>
-                </a>
-                <button class="context-trigger" data-target="chatMenu-${chatItem.id}">⋯</button>
+        <!-- New Chat Button -->
+        <button class="btn-new-chat" id="newChatBtn" th:text="#{chat.button.new}">New chat</button>
 
-                <!-- Context menu for this chat -->
-                <div th:id="'chatMenu-'+${chatItem.id}" class="context-menu">
-                    <ul>
-                        <li>
-                            <button class="menu-item edit-chat-btn"
-                                    th:data-chat-id="${chatItem.id}"
-                                    th:data-chat-title="${chatItem.title}"
-                                    th:text="#{chat.button.edit}">Edit
-                            </button>
-                        </li>
-                        <li>
-                            <form th:action="@{/chat/{id}/archive(id=${chatItem.id})}" method="post" class="menu-form">
-                                <button type="submit" class="menu-item" th:text="#{chat.button.archive}">Archive
-                                </button>
-                            </form>
-                        </li>
-                        <li>
-                            <form th:action="@{/chat/{id}(id=${chatItem.id})}" method="post" class="menu-form">
-                                <input type="hidden" name="_method" value="delete"/>
-                                <button type="submit" class="menu-item menu-item-danger"
-                                        th:text="#{chat.button.delete}">Delete
-                                </button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-        </ul>
-        <div th:unless="${chats != null && !chats.isEmpty()}" class="empty-chat-list">
-            <p th:text="#{chat.empty_chat_list}">No chats</p>
-        </div>
-    </nav>
+        <th:block th:replace="~{fragment/sidebar_fragment::chatList(${chats}, ${chat?.id})}">
+        </th:block>
 
-    <!-- Sidebar Footer / User Block -->
-    <div class="sidebar-footer">
-        <div class="user-info">
-            <span class="user-name" th:text="#{user.default_name}">User</span>
-            <button class="context-trigger user-menu-trigger" data-target="userMenu">⋯</button>
-            <div id="userMenu" class="context-menu context-menu-top">
-                <ul>
-                    <li>
-                        <a href="#" class="menu-item" id="logoutBtn" th:text="#{user.auth.logout}">Logout</a>
-                    </li>
-                    <li>
-                        <button class="menu-item" id="languageBtn" th:text="#{language.modal.name}">Language</button>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</aside>
+        <!-- Sidebar Footer / User Block -->
+        <th:block th:replace="~{fragment/sidebar_fragment::footer()}">
+        </th:block>
 
-<!-- Main Content Area -->
-<div id="main-wrapper">
 
-    <button id="sidebarToggle" class="hamburger-btn mobile-only">☰</button>
+    </aside>
 
-    <th:block th:if="${chat != null}">
-        <header class="chat-header">
+    <!-- Main Content Area -->
+    <div id="main-wrapper">
 
-            <h2 class="chat-title-main" th:text="${chat.title}">Новый чат</h2>
+        <button id="sidebarToggle" class="hamburger-btn mobile-only">☰</button>
 
-            <div class="context-wrapper">
-                <button class="context-trigger" data-target="headerChatMenu">⋯</button>
-                <div id="headerChatMenu" class="context-menu context-menu-bottom-right">
-                    <ul>
-                        <li>
-                            <button class="menu-item edit-chat-btn"
-                                    th:data-chat-id="${chat.id}"
-                                    th:data-chat-title="${chat.title}"
-                                    th:text="#{chat.button.edit}">Edit</button>
-                        </li>
-                        <li>
-                            <form th:action="@{/chat/{id}/archive(id=${chat.id})}" method="post" class="menu-form">
-                                <button type="submit" class="menu-item" th:text="#{chat.button.archive}">Archive</button>
-                            </form>
-                        </li>
-                        <li>
-                            <form th:action="@{/chat/{id}(id=${chat.id})}" method="post" class="menu-form">
-                                <input type="hidden" name="_method" value="delete"/>
-                                <button type="submit" class="menu-item menu-item-danger" th:text="#{chat.button.delete}">Delete</button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </header>
+        <th:block th:if="${chat != null}">
 
-        <!-- Messages area -->
-        <div class="chat-messages" id="chatMessages">
-            <th:block th:each="message : ${chat.messages}">
-                <div class="message" th:classappend="${message.role.name().toLowerCase()}">
-                    <div class="message-body">
-                        <div class="message-content">
-                            <!-- Raw markdown (hidden) -->
-                            <script type="text/markdown" class="raw-markdown" th:utext="${message.content}"></script>
-                            <div class="rendered-markdown"></div>
-                        </div>
-                        <div class="message-actions">
-                            <button class="btn-icon copy-btn" th:title="#{button.copy}" aria-label="Copy">📋</button>
-                            <button th:if="${message.role.name() == 'USER'}"
-                                    class="btn-icon edit-btn"
-                                    th:title="#{chat.message.edit}"
-                                    aria-label="Edit">✏️
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <th:block th:replace="~{fragment/chat_fragment::chatHeader(chatId=${chat.id}, chatTitle=${chat.title})}">
             </th:block>
-        </div>
 
-        <!-- Input form -->
-        <form class="chat-input-form" th:action="@{/chat/{id}/message(id=${chat.id})}" method="post">
-            <textarea name="prompt" class="chat-input"
-                      rows="1"
-                      th:placeholder="#{chat.placeholder.input}"
-                      placeholder="Ask anything ..."></textarea>
-            <button type="submit" class="btn-send" th:text="#{button.send}">Send</button>
-        </form>
+            <!-- Messages area -->
+            <th:block th:replace="~{fragment/chat_fragment::chatMessages(chat=${chat})}">
+            </th:block>
+
+            <!-- Input form -->
+            <th:block th:replace="~{fragment/chat_fragment::chatInput(chat=${chat})}">
+            </th:block>
+
+        </th:block>
+
+        <!-- No chat selected placeholder -->
+        <th:block th:if="${chat == null}">
+            <th:block th:replace="~{fragment/chat_fragment::noChatSelected()}">
+            </th:block>
+        </th:block>
+
+
+    </div>
+
+    <!-- ========== MODALS ========== -->
+    <!-- New Chat Modal -->
+    <th:block th:replace="~{fragment/modal_fragment::newChatModal()}">
     </th:block>
 
-    <!-- No chat selected placeholder -->
-    <th:block th:unless="${chat != null}">
-        <div class="no-chat-selected">
-            <div class="placeholder-icon">💬</div>
-            <h2 th:text="#{chat.no_chat_selected}">No chat selected</h2>
-            <p th:text="#{chat.select_chat_placeholder}">Select a chat to start</p>
-        </div>
+    <!-- Edit Chat Modal -->
+    <th:block th:replace="~{fragment/modal_fragment::editChatModal()}">
     </th:block>
-</div>
 
-<!-- ========== MODALS ========== -->
-<!-- New Chat Modal -->
-<div id="newChatModal" class="modal">
-    <div class="modal-dialog">
-        <div class="modal-header">
-            <h3 th:text="#{chat.modal.new.new}">Create new chat</h3>
-            <button class="modal-close" data-modal="newChatModal">✕</button>
-        </div>
-        <form th:action="@{/chat/new}" method="post" class="modal-form">
-            <label for="newChatTitle" th:text="#{chat.modal.new.label}">Chat title</label>
-            <input type="text" id="newChatTitle" name="title"
-                   th:placeholder="#{chat.placeholder.new}"
-                   placeholder="My chat" required>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel modal-close-btn" th:text="#{button.cancel}">Cancel</button>
-                <button type="submit" class="btn-primary" th:text="#{button.save}">Save</button>
-            </div>
-        </form>
-    </div>
-</div>
+    <!-- Language Selection Modal -->
+    <th:block th:replace="~{fragment/modal_fragment::changeLanguageModal()}">
+    </th:block>
 
-<!-- Edit Chat Modal (pre-filled by JS) -->
-<div id="editChatModal" class="modal">
-    <div class="modal-dialog">
-        <div class="modal-header">
-            <h3 th:text="#{chat.modal.new.edit}">Edit chat</h3>
-            <button class="modal-close" data-modal="editChatModal">✕</button>
-        </div>
-        <form id="editChatForm" th:action="@{#}" method="post" class="modal-form">
-            <label for="editChatTitle" th:text="#{chat.modal.new.label}">Chat title</label>
-            <input type="text" id="editChatTitle" name="title"
-                   th:placeholder="#{chat.placeholder.new}" required>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel modal-close-btn" th:text="#{button.cancel}">Cancel</button>
-                <button type="submit" class="btn-primary" th:text="#{button.save}">Save</button>
-            </div>
-        </form>
-    </div>
-</div>
+    <!-- Language Selection Modal -->
+    <th:block th:replace="~{fragment/modal_fragment::archiveModal()}">
+    </th:block>
 
-<!-- Language Selection Modal -->
-<div id="languageModal" class="modal">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-header">
-            <h3 th:text="#{language.modal.select_name}">Select language</h3>
-            <button class="modal-close" data-modal="languageModal">✕</button>
-        </div>
-        <div class="modal-body">
-            <ul class="language-list">
-                <li><a href="?lang=en" class="language-link">🇬🇧 English</a></li>
-                <li><a href="?lang=fr" class="language-link">🇫🇷 Français</a></li>
-                <li><a href="?lang=de" class="language-link">🇩🇪 Deutsch</a></li>
-                <li><a href="?lang=ru" class="language-link">🇷🇺 Русский</a></li>
-                <li><a href="?lang=es" class="language-link">🇪🇸 Español</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-<!-- Scripts -->
-<script th:src="@{/js/external/marked.min.js}"></script>
-<script th:src="@{/js/external/purify.min.js}"></script>
-<script th:src="@{/js/chat.js}"></script>
+    <!-- Scripts -->
+    <script th:src="@{/js/external/marked.min.js}"></script>
+    <script th:src="@{/js/external/purify.min.js}"></script>
+    <script type="module" th:src="@{/js/app.js}"></script>
 
 </body>
 </html>

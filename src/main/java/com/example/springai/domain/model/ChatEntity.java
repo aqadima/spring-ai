@@ -29,6 +29,12 @@ public class ChatEntity extends BaseEntity<ChatEntity> {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
+
+    @Column(name = "max_messages", nullable = false)
+    private int maxMessages;
+
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatMessageEntity> messages;
 

@@ -125,6 +125,7 @@ body.sidebar-open .overlay {
     border-bottom: 1px solid var(--color-border);
 }
 .sidebar-title {
+    height: 2rem;
     font-size: var(--font-size-xl);
     font-weight: 600;
 }
@@ -213,6 +214,7 @@ body.sidebar-open .overlay {
 
 .menu-item, .menu-form button {
     display: block;
+    color: var(--color-text-primary);
     width: 100%;
     padding: var(--space-sm) var(--space-md);
     text-align: left;
@@ -222,11 +224,13 @@ body.sidebar-open .overlay {
     cursor: pointer;
     transition: background var(--transition-fast);
 }
+
+.menu-item-danger, .menu-item-danger:hover {
+    color: var(--color-danger) !important;
+}
+
 .menu-item:hover, .menu-form button:hover {
     background: var(--color-surface);
-}
-.menu-item-danger {
-    color: var(--color-danger);
 }
 
 /* Position adjustments */
@@ -235,18 +239,20 @@ body.sidebar-open .overlay {
 
 /* Sidebar footer */
 .sidebar-footer {
-    border-top: 1px solid var(--color-border);
-    padding: var(--space-md);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    max-height: 150px;
+    padding: var(--space-md);
+    border-top: 1px solid var(--color-border);
 }
 .user-info {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
     position: relative;
+    height: 2.5rem;
+    width: 100%;
 }
 .user-name {
     font-size: var(--font-size-sm);
@@ -281,6 +287,7 @@ body.sidebar-open .overlay {
 
 .hamburger-btn:hover { background: var(--color-surface); }
 .chat-title-main {
+    height: 2rem;
     flex: 1;
     font-size: var(--font-size-lg);
     font-weight: 600;
@@ -303,13 +310,13 @@ body.sidebar-open .overlay {
     display: flex;
     max-width: 80%;
 }
-.message.user {
+.message-user {
     align-self: flex-end;
 }
-.message.assistant {
+.message-assistant {
     align-self: flex-start;
 }
-.message.system {
+.message-system {
     align-self: center;
     max-width: 90%;
     background: var(--color-message-system);
@@ -322,9 +329,9 @@ body.sidebar-open .overlay {
 .message-body {
     position: relative;
 }
-.message.user .message-content { background: var(--color-message-user); }
-.message.assistant .message-content { background: var(--color-message-assistant); }
-.message.system .message-body { background: transparent; }
+.message-user .message-content { background: var(--color-message-user); }
+.message-assistant .message-content { background: var(--color-message-assistant); }
+.message-system .message-body { background: transparent; }
 
 .message-content {
     border-radius: var(--border-radius);
@@ -348,7 +355,13 @@ body.sidebar-open .overlay {
     opacity: 0;
     transition: opacity var(--transition-fast);
 }
+
+.message-user .message-actions {
+    justify-content: right;
+}
+
 .message:hover .message-actions { opacity: 1; }
+
 .btn-icon {
     font-size: var(--font-size-sm);
     padding: var(--space-xs);
@@ -362,12 +375,12 @@ body.sidebar-open .overlay {
 }
 
 /* Collapsible user message */
-.message.user .rendered-markdown.collapsed {
+.message-user .rendered-markdown.collapsed {
     max-height: calc(1.6rem * 10);
     overflow: hidden;
     position: relative;
 }
-.message.user .rendered-markdown.collapsed::after {
+.message-user .rendered-markdown.collapsed::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -406,6 +419,7 @@ body.sidebar-open .overlay {
     font-family: inherit;
     line-height: 1.4;
     max-height: 150px;
+    height: 2.5rem;
 }
 .btn-send {
     background: var(--color-primary);
@@ -510,4 +524,99 @@ body.sidebar-open .overlay {
     padding: var(--space-md);
     text-align: center;
     color: var(--color-text-muted);
+}
+
+/* --- Archive Modal --- */
+.modal-lg {
+    max-width: 800px;
+    width: 95%;
+}
+
+.archive-container {
+    display: flex;
+    height: 60vh;
+    min-height: 400px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.archive-list-panel {
+    width: 35%;
+    border-right: 1px solid var(--color-border);
+    overflow-y: auto;
+    background: var(--color-surface);
+}
+
+.archive-preview-panel {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-md);
+    background: var(--color-bg);
+}
+
+.archive-chat-list {
+    list-style: none;
+    padding: var(--space-xs) 0;
+}
+
+.archive-chat-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+    border-bottom: 1px solid var(--color-border);
+}
+.archive-chat-item:hover {
+    background: var(--color-sidebar-hover);
+}
+.archive-chat-item.active {
+    background: var(--color-primary);
+    color: white;
+}
+.archive-chat-item .chat-title {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: var(--font-size-sm);
+}
+.archive-chat-item .context-trigger {
+    font-size: var(--font-size-lg);
+    padding: var(--space-xs);
+    margin-left: var(--space-xs);
+}
+
+.archive-preview-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--color-text-muted);
+}
+
+/* Preview messages (simplified, no actions) */
+.archive-message {
+    margin-bottom: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--border-radius);
+    max-width: 80%;
+}
+.archive-message.message-user {
+    background: var(--color-message-user);
+    margin-left: auto;
+}
+.archive-message.message-assistant {
+    background: var(--color-message-assistant);
+    margin-right: auto;
+}
+.archive-message.message-system {
+    background: var(--color-message-system);
+    text-align: center;
+    margin: 0 auto;
+}
+.archive-message .rendered-markdown {
+    font-size: var(--font-size-sm);
 }

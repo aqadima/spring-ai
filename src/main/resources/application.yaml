@@ -36,6 +36,9 @@ spring:
     locations: classpath:db/migration/scripts
 
 app:
+  ai:
+    max-message-history: ${AI_MAX_MESSAGE_HISTORY}
   user:
-    id:
-      default: ${DEFAULT_USER_ID}
+    default:
+      id: ${DEFAULT_USER_ID}
+      username: ${DEFAULT_USERNAME}

@@ -7,11 +7,13 @@ button:
   copy: "Copy"
   send: "Send"
   save: "Save"
+  restore: "Restore"
 
 chat:
   no_chat_selected: "No chat selected"
   select_chat_placeholder: "Select a chat to start"
   empty_chat_list: "No chats"
+  loading: "Loading..."
   button:
     new: "New chat"
     edit: "Edit"
@@ -25,6 +27,9 @@ chat:
       new: "Create new chat"
       edit: "Edit chat"
       label: "Chat title"
+    archive:
+      title: "Archived chats"
+      select_to_preview: "Select a chat to preview"
   message:
     edit: "Edit"
     save: "Save"
@@ -32,6 +37,8 @@ chat:
 
 user:
   default_name: "User"
+  archive:
+    title: "Archive"
   auth:
     logout: "Logout"
   context:

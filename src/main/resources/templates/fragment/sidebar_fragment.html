@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <!--  Fragment of Sidebar Header  -->
+    <th:block th:fragment="header()">
+        <div class="sidebar-header">
+            <h1 class="sidebar-title" th:text="#{app.title}">Spring AI Chat</h1>
+        </div>
+    </th:block>
+
+    <!--  Fragment of Sidebar Chat List  -->
+    <th:block th:fragment="chatList(chats, currentChatId)">
+        <nav class="chat-list-container">
+            <ul class="chat-list" th:if="${chats != null && !chats.isEmpty()}">
+                <th:block th:each="chatItem : ${chats}">
+                    <li class="chat-item" th:attr="data-chat-id=${chatItem?.id}">
+                        <a th:href="@{/chat/{id}(id=${chatItem?.id})}"
+                           class="chat-link"
+                           th:classappend="${currentChatId == chatItem?.id} ? 'active'">
+                            <span class="chat-title" th:text="${chatItem?.title}">Chat title</span>
+                        </a>
+                        <div class="context-wrapper">
+                            <button class="context-trigger" th:data-target="'chatMenu-' + ${chatItem?.id}">⋯</button>
+                            <th:block th:replace="~{fragment/context_menu_fragment ::chatContextMenu('chatMenu-' + ${chatItem?.id}, ${chatItem?.id}, ${chatItem?.title}, '')}"></th:block>
+                        </div>
+                    </li>
+                </th:block>
+            </ul>
+        </nav>
+    </th:block>
+
+    <!--  Fragment of Sidebar Footer  -->
+    <th:block th:fragment="footer()">
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <span class="user-name" th:text="#{user.default_name}">User</span>
+                <button class="context-trigger user-menu-trigger" data-target="userMenu">⋯</button>
+                <div id="userMenu" class="context-menu context-menu-top">
+                    <ul>
+                        <li>
+                            <button class="menu-item" id="languageBtn" th:text="#{language.modal.name}">Language</button>
+                        </li>
+                        <li>
+                            <button class="menu-item" id="archivedChatsBtn" th:text="#{user.archive.title}">Archive</button>
+                        </li>
+                        <li>
+                            <a href="#" class="menu-item" id="logoutBtn" th:text="#{user.auth.logout}">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </th:block>
+
+</body>
+</html>

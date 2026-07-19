@@ -32,6 +32,8 @@ chat:
 
 user:
   default_name: "Пользователь"
+  archive:
+    title: "Архив"
   auth:
     logout: "Выйти"
   context:

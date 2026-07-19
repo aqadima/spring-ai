@@ -6,12 +6,27 @@ import com.example.springai.domain.model.ChatMessageEntity;
 import com.example.springai.middleware.model.request.ChatMessageRequest;
 import com.example.springai.middleware.model.response.ChatMessageResponse;
 import jakarta.annotation.Nonnull;
+import org.springframework.ai.chat.messages.Message;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
 public class ChatMessageMapper {
+
+    @Nonnull
+    public ChatMessageEntity toEntity(@Nonnull final ChatEntity chat,
+                                      @Nonnull final Message message,
+                                      @Nonnull final Long number
+    ) {
+        return ChatMessageEntity.builder()
+                .chat(chat)
+                .userId(chat.getUserId())
+                .role(RoleType.getRoleName(message.getMessageType().getValue()))
+                .content(message.getText())
+                .number(number)
+                .build();
+    }
 
     @Nonnull
     public ChatMessageEntity toEntity(@Nonnull final ChatMessageRequest request,
@@ -59,5 +74,10 @@ public class ChatMessageMapper {
         return chats.stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    @Nonnull
+    public Message toMessage(@Nonnull final ChatMessageEntity chatMessage) {
+        return chatMessage.getRole().getMessage(chatMessage.getContent());
     }
 }
